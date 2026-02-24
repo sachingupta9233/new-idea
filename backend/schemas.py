@@ -2,7 +2,7 @@
 Pydantic schemas for request/response validation
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 from enum import Enum
@@ -48,8 +48,7 @@ class PropertyResponse(PropertyBase):
     source: str
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ==================== Prediction Schemas ====================
@@ -82,8 +81,7 @@ class PredictionResponse(BaseModel):
     model_version: str
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ==================== Locality Schemas ====================
@@ -106,8 +104,7 @@ class LocalityResponse(LocalityBase):
     avg_price_updated: datetime
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LocalityDetailResponse(LocalityResponse):
@@ -132,8 +129,7 @@ class UserResponse(UserBase):
     is_active: bool
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ==================== Auth Schemas ====================
@@ -165,8 +161,7 @@ class SavedEstimateResponse(SavedEstimateBase):
     user_id: Optional[int]
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ==================== Trend Schemas ====================

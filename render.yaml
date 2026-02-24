@@ -4,7 +4,7 @@ services:
     env: python
     plan: starter
     preDeployCommand: "cd backend && python -c \"import init_db; from database import SessionLocal, engine; from models import Base; Base.metadata.create_all(bind=engine); print('Database initialized')\""
-    startCommand: "cd backend && gunicorn main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT"
+    startCommand: "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.0"
