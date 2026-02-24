@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = 'https://new-idea-3.onrender.com/api/v1';
 
 // Validation schema for property prediction
 const predictionValidationSchema = Yup.object().shape({
