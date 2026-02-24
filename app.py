@@ -31,20 +31,20 @@ try:
     if existing_count == 0:
         print("Seeding 14 localities...")
         localities_data = [
-            {"name": "Kharghar", "node_type": "Residential", "metro_distance_km": 8.5, "highway_distance_km": 2.0, "avg_price_per_sqft": 85000},
-            {"name": "Vashi", "node_type": "Mixed", "metro_distance_km": 0.5, "highway_distance_km": 3.0, "avg_price_per_sqft": 120000},
-            {"name": "Panvel", "node_type": "Residential", "metro_distance_km": 15.0, "highway_distance_km": 5.0, "avg_price_per_sqft": 65000},
-            {"name": "Nerul", "node_type": "CBD", "metro_distance_km": 2.0, "highway_distance_km": 4.0, "avg_price_per_sqft": 110000},
-            {"name": "Belapur", "node_type": "CBD", "metro_distance_km": 3.0, "highway_distance_km": 5.0, "avg_price_per_sqft": 105000},
-            {"name": "Airoli", "node_type": "Residential", "metro_distance_km": 7.0, "highway_distance_km": 2.5, "avg_price_per_sqft": 95000},
-            {"name": "Ulwe", "node_type": "Emerging", "metro_distance_km": 18.0, "highway_distance_km": 6.0, "avg_price_per_sqft": 55000},
-            {"name": "Dronagiri", "node_type": "Emerging", "metro_distance_km": 20.0, "highway_distance_km": 7.0, "avg_price_per_sqft": 50000},
-            {"name": "CBD Belapur", "node_type": "CBD", "metro_distance_km": 1.0, "highway_distance_km": 4.5, "avg_price_per_sqft": 130000},
-            {"name": "Seawoods", "node_type": "Premium", "metro_distance_km": 5.0, "highway_distance_km": 6.0, "avg_price_per_sqft": 150000},
-            {"name": "Koparkhairane", "node_type": "Residential", "metro_distance_km": 6.0, "highway_distance_km": 3.5, "avg_price_per_sqft": 100000},
-            {"name": "Ghansoli", "node_type": "Residential", "metro_distance_km": 12.0, "highway_distance_km": 4.0, "avg_price_per_sqft": 80000},
-            {"name": "Kamothe", "node_type": "Residential", "metro_distance_km": 16.0, "highway_distance_km": 5.5, "avg_price_per_sqft": 70000},
-            {"name": "Taloje", "node_type": "Industrial", "metro_distance_km": 20.0, "highway_distance_km": 2.0, "avg_price_per_sqft": 45000}
+            {"name": "Kharghar", "node_type": "Residential", "metro_distance_km": 8.5, "highway_distance_km": 2.0, "avg_price_per_sqft": 8500},
+            {"name": "Vashi", "node_type": "Mixed", "metro_distance_km": 0.5, "highway_distance_km": 3.0, "avg_price_per_sqft": 12000},
+            {"name": "Panvel", "node_type": "Residential", "metro_distance_km": 15.0, "highway_distance_km": 5.0, "avg_price_per_sqft": 6500},
+            {"name": "Nerul", "node_type": "CBD", "metro_distance_km": 2.0, "highway_distance_km": 4.0, "avg_price_per_sqft": 11000},
+            {"name": "Belapur", "node_type": "CBD", "metro_distance_km": 3.0, "highway_distance_km": 5.0, "avg_price_per_sqft": 10500},
+            {"name": "Airoli", "node_type": "Residential", "metro_distance_km": 7.0, "highway_distance_km": 2.5, "avg_price_per_sqft": 9500},
+            {"name": "Ulwe", "node_type": "Emerging", "metro_distance_km": 18.0, "highway_distance_km": 6.0, "avg_price_per_sqft": 5500},
+            {"name": "Dronagiri", "node_type": "Emerging", "metro_distance_km": 20.0, "highway_distance_km": 7.0, "avg_price_per_sqft": 5000},
+            {"name": "CBD Belapur", "node_type": "CBD", "metro_distance_km": 1.0, "highway_distance_km": 4.5, "avg_price_per_sqft": 13000},
+            {"name": "Seawoods", "node_type": "Premium", "metro_distance_km": 5.0, "highway_distance_km": 6.0, "avg_price_per_sqft": 15000},
+            {"name": "Koparkhairane", "node_type": "Residential", "metro_distance_km": 6.0, "highway_distance_km": 3.5, "avg_price_per_sqft": 10000},
+            {"name": "Ghansoli", "node_type": "Residential", "metro_distance_km": 12.0, "highway_distance_km": 4.0, "avg_price_per_sqft": 8000},
+            {"name": "Kamothe", "node_type": "Residential", "metro_distance_km": 16.0, "highway_distance_km": 5.5, "avg_price_per_sqft": 7000},
+            {"name": "Taloje", "node_type": "Industrial", "metro_distance_km": 20.0, "highway_distance_km": 2.0, "avg_price_per_sqft": 4500}
         ]
         
         for loc_data in localities_data:

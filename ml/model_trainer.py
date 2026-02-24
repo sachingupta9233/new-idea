@@ -59,11 +59,28 @@ class ModelTrainer:
             "CBD Belapur", "Seawoods"
         ]
         
+        # More realistic price per sqft ranges for Navi Mumbai localities
+        locality_price_ranges = {
+            "Seawoods": (140000, 160000),
+            "CBD Belapur": (120000, 140000),
+            "Vashi": (110000, 130000),
+            "Belapur": (100000, 120000),
+            "Kharghar": (80000, 100000),
+            "Koparkhairane": (90000, 110000),
+            "Airoli": (85000, 105000),
+            "Ghansoli": (75000, 95000),
+            "Kamothe": (65000, 85000),
+            "Panvel": (60000, 80000),
+            "Ulwe": (50000, 70000),
+            "Dronagiri": (45000, 65000),
+            "Taloje": (40000, 60000),
+        }
+        
         data = {
             'locality': np.random.choice(localities, n_samples),
             'bhk': np.random.choice([1, 2, 3, 4], n_samples),
-            'carpet_area_sqft': np.random.uniform(500, 5000, n_samples),
-            'floor_number': np.random.randint(1, 30, n_samples),
+            'carpet_area_sqft': np.random.uniform(500, 4000, n_samples),
+            'floor_number': np.random.randint(1, 20, n_samples),
             'total_floors': np.random.randint(5, 40, n_samples),
             'building_age_years': np.random.randint(0, 25, n_samples),
             'lift': np.random.choice([0, 1], n_samples),
@@ -72,29 +89,51 @@ class ModelTrainer:
             'swimming_pool': np.random.choice([0, 1], n_samples),
             'gated_society': np.random.choice([0, 1], n_samples),
             'cctv': np.random.choice([0, 1], n_samples),
-            'metro_distance_km': np.random.uniform(0.5, 10, n_samples),
-            'highway_distance_km': np.random.uniform(1, 15, n_samples),
+            'metro_distance_km': np.random.uniform(0.5, 15, n_samples),
+            'highway_distance_km': np.random.uniform(1, 10, n_samples),
         }
         
         df = pd.DataFrame(data)
         
-        # Generate synthetic price based on features
-        df['price'] = (
-            df['bhk'] * 2000000 +
-            df['carpet_area_sqft'] * 80 +
-            df['lift'] * 500000 +
-            df['parking'] * 300000 +
-            df['gym'] * 200000 +
-            df['swimming_pool'] * 500000 +
-            df['gated_society'] * 300000 +
-            df['cctv'] * 100000 +
-            (5000 / (df['metro_distance_km'] + 1)) +
-            np.random.normal(0, 500000, n_samples)
-        )
+        # Generate synthetic price based on realistic patterns
+        prices = []
+        for idx, row in df.iterrows():
+            locality = row['locality']
+            base_price_range = locality_price_ranges.get(locality, (80000, 100000))
+            base_price_per_sqft = np.random.uniform(base_price_range[0], base_price_range[1])
+            
+            # Apply feature adjustments
+            bhk_multiplier = {1: 0.85, 2: 1.0, 3: 1.15, 4: 1.3}
+            bhk_factor = bhk_multiplier.get(int(row['bhk']), 1.0)
+            
+            # Amenities add value
+            amenity_bonus = (row['lift'] * 0.02 + row['parking'] * 0.02 + 
+                            row['gym'] * 0.01 + row['swimming_pool'] * 0.02 + 
+                            row['gated_society'] * 0.02 + row['cctv'] * 0.01)
+            
+            # Age factor
+            age_factor = 1.0
+            if row['building_age_years'] < 5:
+                age_factor = 1.08
+            elif row['building_age_years'] > 15:
+                age_factor = 0.92
+            
+            # Calculate total price
+            adjusted_price_per_sqft = base_price_per_sqft * bhk_factor * (1 + amenity_bonus) * age_factor
+            total_price = adjusted_price_per_sqft * row['carpet_area_sqft']
+            
+            # Add small random variation
+            total_price *= np.random.uniform(0.95, 1.05)
+            
+            prices.append(total_price)
         
-        df['price'] = df['price'].clip(lower=500000, upper=100000000)
+        df['price'] = prices
+        
+        # Realistic bounds for Navi Mumbai
+        df['price'] = df['price'].clip(lower=3000000, upper=50000000)
         
         logger.info(f"Created synthetic data: {df.shape}")
+        logger.info(f"Price range: ₹{df['price'].min():,.0f} to ₹{df['price'].max():,.0f}")
         return df
     
     def prepare_features(self, df: pd.DataFrame) -> tuple:

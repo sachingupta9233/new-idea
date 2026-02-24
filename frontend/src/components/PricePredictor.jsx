@@ -46,6 +46,20 @@ export default function PricePredictor() {
     }
   };
 
+  const formatIndianPrice = (price) => {
+    if (!price) return "₹ 0";
+
+    if (price >= 10000000) {
+      return `₹ ${(price / 10000000).toFixed(2)} Cr`;
+    } 
+    else if (price >= 100000) {
+      return `₹ ${(price / 100000).toFixed(2)} Lakh`;
+    } 
+    else {
+      return `₹ ${price.toLocaleString("en-IN")}`;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 p-4">
       <div className="max-w-6xl mx-auto">
@@ -220,7 +234,7 @@ export default function PricePredictor() {
                 <div className="bg-gradient-to-br from-green-50 to-blue-50 border-2 border-green-200 rounded-lg p-6">
                   <p className="text-gray-600 text-sm">Estimated Total Price</p>
                   <p className="text-4xl font-bold text-green-600 mb-2">
-                    ₹{(prediction.predicted_total_price / 10000000).toFixed(2)} Cr
+                    {formatIndianPrice(prediction.predicted_total_price)}
                   </p>
                   <p className="text-gray-600 text-sm">
                     ₹{(prediction.predicted_price_per_sqft).toFixed(0)}/sq.ft.
@@ -230,14 +244,14 @@ export default function PricePredictor() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                     <p className="text-gray-600 text-sm">Lower Bound (80% CI)</p>
-                    <p className="text-xl font-semibold text-blue-600">
-                      ₹{(prediction.lower_bound / 10000000).toFixed(2)} Cr
+                    <p className="text-lg font-semibold text-blue-600">
+                      {formatIndianPrice(prediction.lower_bound)}
                     </p>
                   </div>
                   <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                     <p className="text-gray-600 text-sm">Upper Bound (80% CI)</p>
-                    <p className="text-xl font-semibold text-blue-600">
-                      ₹{(prediction.upper_bound / 10000000).toFixed(2)} Cr
+                    <p className="text-lg font-semibold text-blue-600">
+                      {formatIndianPrice(prediction.upper_bound)}
                     </p>
                   </div>
                 </div>

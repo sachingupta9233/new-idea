@@ -41,8 +41,8 @@ class Settings(BaseSettings):
     
     # Prediction Configuration
     PREDICTION_TIMEOUT_SECONDS: int = 5
-    MAX_PREDICTION_PRICE: float = 100000000  # 10 crore
-    MIN_PREDICTION_PRICE: float = 500000  # 5 lakhs
+    MAX_PREDICTION_PRICE: float = 50000000  # 5 crore max (realistic for Navi Mumbai)
+    MIN_PREDICTION_PRICE: float = 1000000  # 10 lakhs min
     
     # Localities supported
     SUPPORTED_LOCALITIES: list = [

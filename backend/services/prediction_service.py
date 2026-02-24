@@ -59,12 +59,17 @@ class PredictionService:
         
         # Make prediction
         if self.model and self.scaler:
-            predicted_price_per_sqft = self._predict_with_ml(features)
+            # Model predicts TOTAL PRICE for the property
+            predicted_total_price = self._predict_with_ml(features)
         else:
             # Fallback: Use locality average + adjustments
-            predicted_price_per_sqft = self._predict_with_fallback(request, locality)
+            predicted_total_price = self._predict_with_fallback(request, locality)
         
-        predicted_total_price = predicted_price_per_sqft * request.carpet_area_sqft
+        # Sanity check: cap unrealistic prices
+        predicted_total_price = self._apply_sanity_check(predicted_total_price)
+        
+        # Calculate price per sqft from total price
+        predicted_price_per_sqft = predicted_total_price / request.carpet_area_sqft
         
         # Calculate confidence interval (simplified)
         confidence_score = 0.85  # Default confidence
@@ -133,19 +138,49 @@ class PredictionService:
         return features
     
     def _predict_with_ml(self, features: dict) -> float:
-        """Make prediction using trained ML model"""
+        """
+        Make prediction using trained ML model
+        Returns: Total price in rupees (NOT price per sqft)
+        """
         try:
             feature_vector = self._features_to_vector(features)
             scaled_features = self.scaler.transform([feature_vector])
-            pred = self.model.predict(scaled_features)[0]
-            return max(pred, self.settings.MIN_PREDICTION_PRICE)
+            # Model predicts TOTAL PRICE for the property
+            predicted_total_price = self.model.predict(scaled_features)[0]
+            return max(predicted_total_price, self.settings.MIN_PREDICTION_PRICE)
         except Exception as e:
             logger.error(f"ML prediction error: {e}")
             return self._predict_with_fallback_simple(features)
     
+    def _apply_sanity_check(self, predicted_total_price: float) -> float:
+        """
+        Apply sanity checks to predicted price
+        - Cap extremely high predictions (possible model artifacts)
+        - Ensure minimum viable prediction
+        """
+        # If prediction is > 5 crore (unrealistic for Navi Mumbai), scale it down
+        if predicted_total_price > 50000000:
+            logger.warning(f"Predicted price {predicted_total_price:,.0f} exceeds realistic range, scaling down by 10x")
+            predicted_total_price = predicted_total_price / 10
+        
+        # Final cap at 5 crore max
+        if predicted_total_price > 50000000:
+            logger.warning(f"Price still too high {predicted_total_price:,.0f}, capping at 5 crore")
+            predicted_total_price = 50000000
+        
+        # Apply min/max bounds
+        predicted_total_price = max(predicted_total_price, self.settings.MIN_PREDICTION_PRICE)
+        predicted_total_price = min(predicted_total_price, self.settings.MAX_PREDICTION_PRICE)
+        
+        return predicted_total_price
+    
     def _predict_with_fallback(self, request: PredictionRequest, locality: Locality) -> float:
-        """Fallback prediction using locality averages and feature adjustments"""
-        base_price = locality.avg_price_per_sqft or 100000
+        """
+        Fallback prediction using locality averages and feature adjustments
+        Returns: Total price in rupees
+        """
+        # Start with locality's average price per sqft
+        base_price_per_sqft = locality.avg_price_per_sqft or 100000
         
         # Adjustments based on property features
         adjustment = 1.0
@@ -172,13 +207,26 @@ class PredictionService:
             elif request.building_age_years > 15:
                 adjustment *= 0.9
         
-        return base_price * adjustment
+        # Calculate adjusted price per sqft
+        adjusted_price_per_sqft = base_price_per_sqft * adjustment
+        
+        # Calculate TOTAL PRICE
+        total_price = adjusted_price_per_sqft * request.carpet_area_sqft
+        
+        return total_price
     
     def _predict_with_fallback_simple(self, features: dict) -> float:
-        """Simple fallback prediction"""
-        base_price = features.get('avg_price_locality', 100000)
+        """
+        Simple fallback prediction
+        Returns: Total price in rupees
+        """
+        base_price_per_sqft = features.get('avg_price_locality', 100000)
         adjustment = 1.0 + (features['bhk'] * 0.1)
-        return base_price * adjustment
+        adjusted_price_per_sqft = base_price_per_sqft * adjustment
+        
+        # Calculate TOTAL PRICE using carpet area
+        total_price = adjusted_price_per_sqft * features['carpet_area_sqft']
+        return total_price
     
     def _features_to_vector(self, features: dict) -> list:
         """Convert feature dict to vector in correct order"""
